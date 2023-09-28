@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
 
 using namespace std;
 
@@ -72,6 +73,29 @@ void SpausdintiLentele(const vector<Studentas>& studentai, bool naudotiMediana) 
             cout << left << setw(20) << studentas.vardas << setw(20) << studentas.pavarde << setw(15) << fixed << setprecision(2) << galutinis << endl;
         }
     }
+}
+
+void NuskaitytiIsFailo(vector<Studentas>& studentai) {
+    ifstream failas("kursiokai.txt"); 
+    
+
+    if (!failas) {
+        cout << "Klaida: Nepavyko atidaryti failo." << endl;
+        return;
+    }
+
+    studentai.clear(); 
+
+    string eilute;
+    while (getline(failas, eilute)) {
+        Studentas studentas;
+        size_t vardo_pozicija = eilute.find_first_of(" ");
+        studentas.vardas = eilute.substr(0, vardo_pozicija);
+        studentas.pavarde = eilute.substr(vardo_pozicija + 1);
+        studentai.push_back(studentas);
+    }
+
+    failas.close();
 }
 
 int main() {
