@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <iomanip>
+#include <sstream>
 #include <algorithm>
 
 struct Studentas {
@@ -51,32 +52,40 @@ double skaiciuotiGalutiniBala(const Studentas& studentas, bool naudotiVidurki) {
 
 int main() {
     std::vector<Studentas> studentai;
+    char baloSkaiciavimoBudas;
 
-    // Nuskaitome duomenis iš failo
-    std::ifstream inFile("kursiokai.txt");
+    std::ifstream inFile("studentai10000.txt.txt");
     if (!inFile) {
-        std::cerr << "Klaida atidarant failą." << std::endl;
+        std::cerr << "Nepavyko atidaryti failo duomenys.txt" << std::endl;
         return 1;
     }
 
-    while (inFile) {
+    std::string eilute;
+    while (std::getline(inFile, eilute)) {
+        std::istringstream iss(eilute);
         Studentas naujasStudentas;
-        inFile >> naujasStudentas.vardas;
-        inFile >> naujasStudentas.pavarde;
+        iss >> naujasStudentas.vardas >> naujasStudentas.pavarde;
 
         int pazymys;
-        while (inFile >> pazymys && pazymys != -1) {
+        while (iss >> pazymys) {
             naujasStudentas.namuDarbai.push_back(pazymys);
         }
-        inFile >> naujasStudentas.egzaminas;
+
+        if (naujasStudentas.namuDarbai.empty()) {
+            
+            continue;
+        }
+
+        naujasStudentas.egzaminas = naujasStudentas.namuDarbai.back();
+        naujasStudentas.namuDarbai.pop_back();
 
         studentai.push_back(naujasStudentas);
     }
 
     inFile.close();
 
-    // Skaičiuojame galutinius balus ir išvedame rezultatus
     std::ofstream outFile("rezultatai.txt");
+
     outFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)" << std::setw(15) << std::right << "Galutinis (Med.)" << std::endl;
     outFile << "---------------------------------------------------------------------" << std::endl;
 
