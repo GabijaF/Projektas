@@ -7,34 +7,35 @@
 struct Studentas {
     std::string vardas;
     std::string pavarde;
-    std::vector<std::string> namuDarbai;
+    std::vector<int> namuDarbai;
     int egzaminas;
 };
 
-double skaiciuotiVidurki(const std::vector<std::string>& pazymiai) {
+int generuotiAtsitiktiniBalas() {
+    return rand() % 10 + 1;
+}
+
+double skaiciuotiVidurki(const std::vector<int>& pazymiai) {
     if (pazymiai.empty()) {
         return 0.0;
     }
     double suma = 0.0;
-    for (const std::string& pazymys : pazymiai) {
-        suma += std::stod(pazymys); // Konvertuojame į double
+    for (int pazymys : pazymiai) {
+        suma += pazymys;
     }
     return suma / pazymiai.size();
 }
 
-double skaiciuotiMediana(const std::vector<std::string>& pazymiai) {
+double skaiciuotiMediana(const std::vector<int>& pazymiai) {
     if (pazymiai.empty()) {
         return 0.0;
     }
-    std::vector<double> kopija;
-    for (const std::string& pazymys : pazymiai) {
-        kopija.push_back(std::stod(pazymys)); // Konvertuojame į double
-    }
+    std::vector<int> kopija = pazymiai;
     std::sort(kopija.begin(), kopija.end());
     int dydis = kopija.size();
     if (dydis % 2 == 0) {
-        double vidurinis1 = kopija[dydis / 2 - 1];
-        double vidurinis2 = kopija[dydis / 2];
+        int vidurinis1 = kopija[dydis / 2 - 1];
+        int vidurinis2 = kopija[dydis / 2];
         return (vidurinis1 + vidurinis2) / 2.0;
     } else {
         return kopija[dydis / 2];
@@ -56,6 +57,8 @@ int main() {
     std::vector<Studentas> studentai;
     char pasirinkimas;
 
+    srand(time(nullptr));
+
     do {
         Studentas naujasStudentas;
         std::cout << "Įveskite studento vardą: ";
@@ -63,17 +66,33 @@ int main() {
         std::cout << "Įveskite studento pavardę: ";
         std::cin >> naujasStudentas.pavarde;
 
-        std::string pazymys;
-        std::cout << "Įveskite namų darbų rezultatus (baigti su punktu): ";
-        while (std::cin >> pazymys) {
-            if (pazymys == ".") {
-                break; // Nutraukiame įvedimą, jei įvesta taškas
-            }
-            naujasStudentas.namuDarbai.push_back(pazymys);
-        }
+        char generuotiPazymius;
+        std::cout << "Ar norite, kad namų darbų ir egzamino pažymiai būtų generuojami atsitiktinai? (T/N): ";
+        std::cin >> generuotiPazymius;
 
-        std::cout << "Įveskite egzamino rezultatą: ";
-        std::cin >> naujasStudentas.egzaminas;
+        if (generuotiPazymius == 'T' || generuotiPazymius == 't') {
+            // Generuojame atsitiktinius namų darbų balus
+            int namuDarbuKiekis = rand() % 10 + 1;
+            for (int i = 0; i < namuDarbuKiekis; ++i) {
+                naujasStudentas.namuDarbai.push_back(generuotiAtsitiktiniBalas());
+            }
+
+            // Generuojame atsitiktinį egzamino balą
+            naujasStudentas.egzaminas = generuotiAtsitiktiniBalas();
+        } else {
+            // Vartotojas pats įveda namų darbų ir egzamino pažymius
+            int pazymys;
+            std::cout << "Įveskite namų darbų rezultatus (baigti su Enter): ";
+            while (std::cin >> pazymys) {
+                if (pazymys == -1) {
+                    break;
+                }
+                naujasStudentas.namuDarbai.push_back(pazymys);
+            }
+
+            std::cout << "Įveskite egzamino rezultatą: ";
+            std::cin >> naujasStudentas.egzaminas;
+        }
 
         studentai.push_back(naujasStudentas);
 
