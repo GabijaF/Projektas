@@ -1,4 +1,4 @@
-#include "BaloSkaiciavimas.h"
+#include "funkcijos.h"
 #include "vidurkis.h"
 #include "mediana.h"
 
