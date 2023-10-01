@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <sstream>
 #include "studentas.h"
+#include "vidurkis.h"
+#include "mediana.h"
 #include "funkcijos.h"
 
 int main() {
