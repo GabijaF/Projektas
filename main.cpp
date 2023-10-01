@@ -6,17 +6,17 @@
 struct Studentas {
     std::string vardas;
     std::string pavarde;
-    std::vector<int> namuDarbai;
-    int egzaminas;
+    std::vector<int> Nd;
+    int egz;
 };
 
-// Funkcija generuojanti atsitiktinius namu darbu balus nuo 1 iki 10
-int generuotiAtsitiktiniBalas() {
+// Funkcija generuojan namu darbo balus nuo 1 iki 10
+int generuotiNdBala() {
     return rand() % 10 + 1;
 }
 
-// Funkcija generuojanti atsitiktini egzamino bala nuo 1 iki 10
-int generuotiAtsitiktiniEgzamina() {
+// Funkcija generuoja egzamino bala nuo 1 iki 10
+int generuotiEgzBala() {
     return rand() % 10 + 1;
 }
 
@@ -48,13 +48,13 @@ double skaiciuotiMediana(const std::vector<int>& pazymiai) {
 }
 
 double skaiciuotiGalutiniBala(const Studentas& studentas, bool naudotiVidurki) {
-    double namuDarbuBalas = skaiciuotiVidurki(studentas.namuDarbai);
-    double galutinisBalas = (0.4 * namuDarbuBalas + 0.6 * studentas.egzaminas);
+    double NdBalas = skaiciuotiVidurki(studentas.Nd);
+    double galutinisBalas = (0.4 * NdBalas + 0.6 * studentas.egz);
     if (naudotiVidurki) {
         return galutinisBalas;
     } else {
-        double mediana = skaiciuotiMediana(studentas.namuDarbai);
-        return (0.4 * mediana + 0.6 * studentas.egzaminas);
+        double mediana = skaiciuotiMediana(studentas.Nd);
+        return (0.4 * mediana + 0.6 * studentas.egz);
     }
 }
 
@@ -72,26 +72,26 @@ int main() {
         std::cin >> naujasStudentas.pavarde;
 
         char generuotiPazymius;
-        std::cout << "Ar norite, kad namų darbų ir egzamino pažymiai būtų generuojami atsitiktinai? (T/N): ";
+        std::cout << "Ar norite, kad namų darbų ir egzamino pažymiai būtų generuojami? (T/N): ";
         std::cin >> generuotiPazymius;
 
         if (generuotiPazymius == 'T' || generuotiPazymius == 't') {
-            int namuDarbuKiekis = rand() % 10 + 1;
-            for (int i = 0; i < namuDarbuKiekis; ++i) {
-                naujasStudentas.namuDarbai.push_back(generuotiAtsitiktiniBalas());
+            int NdKiekis = rand() % 10 + 1;
+            for (int i = 0; i < NdKiekis; ++i) {
+                naujasStudentas.Nd.push_back(generuotiNdBala());
             }
-            naujasStudentas.egzaminas = generuotiAtsitiktiniEgzamina();
+            naujasStudentas.egz = generuotiEgzBala();
         } else {
             int pazymys;
-            std::cout << "Įveskite namų darbų rezultatus (baigti su -1): ";
+            std::cout << "Įveskite namų darbų pažymius (baigus parašyk -1): ";
             while (std::cin >> pazymys) {
                 if (pazymys == -1) {
                     break;
                 }
-                naujasStudentas.namuDarbai.push_back(pazymys);
+                naujasStudentas.Nd.push_back(pazymys);
             }
-            std::cout << "Įveskite egzamino rezultatą: ";
-            std::cin >> naujasStudentas.egzaminas;
+            std::cout << "Įveskite egzamino pažymį: ";
+            std::cin >> naujasStudentas.egz;
         }
 
         studentai.push_back(naujasStudentas);
@@ -102,11 +102,11 @@ int main() {
     } while (pasirinkimas == 'T' || pasirinkimas == 't');
 
     char baloSkaiciavimoBudas;
-    std::cout << "Ar norite skaičiuoti galutinį balą pagal vidurkį (V) arba medianą (M)? ";
+    std::cout << "Kaip norite skaičiuoti galutinį balą pagal vidurkį (V) ar pagal medianą (M)? ";
     std::cin >> baloSkaiciavimoBudas;
 
     std::cout << std::endl;
-    std::cout << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right;
+    std::cout << std::setw(20) << std::left << "Vardas" << std::setw(20) << std::left << "Pavardė" << std::setw(20) << std::right;
 
     if (baloSkaiciavimoBudas == 'M' || baloSkaiciavimoBudas == 'm') {
         std::cout << "Galutinis (Med.)" << std::endl;
@@ -114,14 +114,14 @@ int main() {
         std::cout << "Galutinis (Vid.)" << std::endl;
     }
     
-    std::cout << "-----------------------------------------------------------" << std::endl;
+    std::cout << "---------------------------------------------------------------" << std::endl;
 
     for (const Studentas& studentas : studentai) {
         double galutinisBalas = (baloSkaiciavimoBudas == 'V' || baloSkaiciavimoBudas == 'v') ?
             skaiciuotiGalutiniBala(studentas, true) :
             skaiciuotiGalutiniBala(studentas, false);
 
-        std::cout << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(15) << std::fixed << std::setprecision(2) << std::right << galutinisBalas << std::endl;
+        std::cout << std::setw(20) << std::left << studentas.vardas << std::setw(20) << std::left << studentas.pavarde << std::setw(7) << std::fixed << std::setprecision(2) << std::right << galutinisBalas << std::endl;
     }
 
     return 0;
