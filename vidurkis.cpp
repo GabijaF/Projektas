@@ -11,4 +11,4 @@ double skaiciuotiVidurki(const std::vector<int>& pazymiai) {
     return suma / pazymiai.size();
 }
 
-// Papildomos funkcijos susijusios su vidurkiais
+
