@@ -1,6 +1,8 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <iomanip>
+#include <sstream>
 #include <algorithm>
 
 struct Studentas {
@@ -9,16 +11,6 @@ struct Studentas {
     std::vector<int> Nd;
     int egz;
 };
-
-// Funkcija generuojan namu darbo balus nuo 1 iki 10
-int generuotiNdBala() {
-    return rand() % 10 + 1;
-}
-
-// Funkcija generuoja egzamino bala nuo 1 iki 10
-int generuotiEgzBala() {
-    return rand() % 10 + 1;
-}
 
 double skaiciuotiVidurki(const std::vector<int>& pazymiai) {
     if (pazymiai.empty()) {
@@ -60,69 +52,53 @@ double skaiciuotiGalutiniBala(const Studentas& studentas, bool naudotiVidurki) {
 
 int main() {
     std::vector<Studentas> studentai;
-    char pasirinkimas;
+    char baloSkaiciavimoBudas;
 
-    srand(time(nullptr));
+    std::ifstream inFile("kursiokai.txt");
+    if (!inFile) {
+        std::cerr << "Nepavyko atidaryti failo" << std::endl;
+        return 1;
+    }
 
-    do {
+    std::string eilute;
+    while (std::getline(inFile, eilute)) {
+        std::istringstream iss(eilute);
         Studentas naujasStudentas;
-        std::cout << "Įveskite studento vardą: ";
-        std::cin >> naujasStudentas.vardas;
-        std::cout << "Įveskite studento pavardę: ";
-        std::cin >> naujasStudentas.pavarde;
+        iss >> naujasStudentas.vardas >> naujasStudentas.pavarde;
 
-        char generuotiPazymius;
-        std::cout << "Ar norite, kad namų darbų ir egzamino pažymiai būtų generuojami? (T/N): ";
-        std::cin >> generuotiPazymius;
-
-        if (generuotiPazymius == 'T' || generuotiPazymius == 't') {
-            int NdKiekis = rand() % 10 + 1;
-            for (int i = 0; i < NdKiekis; ++i) {
-                naujasStudentas.Nd.push_back(generuotiNdBala());
-            }
-            naujasStudentas.egz = generuotiEgzBala();
-        } else {
-            int pazymys;
-            std::cout << "Įveskite namų darbų pažymius (baigus parašyk -1): ";
-            while (std::cin >> pazymys) {
-                if (pazymys == -1) {
-                    break;
-                }
-                naujasStudentas.Nd.push_back(pazymys);
-            }
-            std::cout << "Įveskite egzamino pažymį: ";
-            std::cin >> naujasStudentas.egz;
+        int pazymys;
+        while (iss >> pazymys) {
+            naujasStudentas.Nd.push_back(pazymys);
         }
 
+        if (naujasStudentas.Nd.empty()) {
+            
+            continue;
+        }
+
+        naujasStudentas.egz = naujasStudentas.Nd.back();
+        naujasStudentas.Nd.pop_back();
+
         studentai.push_back(naujasStudentas);
-
-        std::cout << "Ar norite įvesti dar vieno studento duomenis? (T/N): ";
-        std::cin >> pasirinkimas;
-
-    } while (pasirinkimas == 'T' || pasirinkimas == 't');
-
-    char baloSkaiciavimoBudas;
-    std::cout << "Kaip norite skaičiuoti galutinį balą pagal vidurkį (V) ar pagal medianą (M)? ";
-    std::cin >> baloSkaiciavimoBudas;
-
-    std::cout << std::endl;
-    std::cout << std::setw(20) << std::left << "Vardas" << std::setw(20) << std::left << "Pavardė" << std::setw(20) << std::right;
-
-    if (baloSkaiciavimoBudas == 'M' || baloSkaiciavimoBudas == 'm') {
-        std::cout << "Galutinis (Med.)" << std::endl;
-    } else {
-        std::cout << "Galutinis (Vid.)" << std::endl;
     }
-    
-    std::cout << "---------------------------------------------------------------" << std::endl;
+
+    inFile.close();
+
+    std::ofstream outFile("rezultatai.txt");
+
+    outFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)" << std::setw(15) << std::right << "Galutinis (Med.)" << std::endl;
+    outFile << "---------------------------------------------------------------------" << std::endl;
 
     for (const Studentas& studentas : studentai) {
-        double galutinisBalas = (baloSkaiciavimoBudas == 'V' || baloSkaiciavimoBudas == 'v') ?
-            skaiciuotiGalutiniBala(studentas, true) :
-            skaiciuotiGalutiniBala(studentas, false);
+        double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas, true);
+        double galutinisBalasMediana = skaiciuotiGalutiniBala(studentas, false);
 
-        std::cout << std::setw(20) << std::left << studentas.vardas << std::setw(20) << std::left << studentas.pavarde << std::setw(7) << std::fixed << std::setprecision(2) << std::right << galutinisBalas << std::endl;
+        outFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(15) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis << std::setw(15) << std::fixed << std::setprecision(2) << std::right << galutinisBalasMediana << std::endl;
     }
+
+    outFile.close();
+
+    std::cout << "Rezultatai išsaugoti failo rezultatai.txt." << std::endl;
 
     return 0;
 }
