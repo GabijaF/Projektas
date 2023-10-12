@@ -99,9 +99,10 @@ int main() {
 
     galvociaiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)" << std::endl;
     galvociaiFile << "---------------------------------------------------------------------" << std::endl;
+    
+    auto startSortTime = std::chrono::high_resolution_clock::now();
 
-
-   for (const Studentas& studentas : studentai) {
+    for (const Studentas& studentas : studentai) {
         double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas, true);
 
         rezultataiFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(5) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis  << std::endl;
@@ -112,6 +113,11 @@ int main() {
             galvociaiFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(5) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis << std::endl;
         }
     }
+
+    auto endSortTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> sortTime = endSortTime - startSortTime;
+    std::cout << "Failo rusiavimas su " << studentCount << " studentais į dvi grupes uztruko: " << sortTime.count() << " sekundes" << std::endl;
+
 
     rezultataiFile.close();
     vargsiukaiFile.close();
