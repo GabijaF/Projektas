@@ -75,9 +75,17 @@ int main() {
 
     std::cout << "Failo kursiokai.txt nuskaitymas uztruko: " << readFileTime.count() << " sekundes" << std::endl;
 
+    auto startCreateResultFileTime = std::chrono::high_resolution_clock::now();
+
     std::ofstream rezultataiFile("rezultatai.txt");
     std::ofstream vargsiukaiFile("vargsiukai.txt");
     std::ofstream galvociaiFile("galvociai.txt");
+
+    auto endCreateResultFileTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> createResultFileTime = endCreateResultFileTime - startCreateResultFileTime;
+    std::cout << "Failo rezultatai.txt kurimas uztruko: " << createResultFileTime.count() << " sekundes" << std::endl;
+
+    
 
     rezultataiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)"  << std::endl;
     rezultataiFile << "---------------------------------------------------------------------" << std::endl;
