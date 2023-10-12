@@ -35,11 +35,16 @@ int main() {
     std::vector<Studentas> studentai;
     char baloSkaiciavimoBudas;
 
+    auto startReadFileTime = std::chrono::high_resolution_clock::now(); 
+
     std::ifstream inFile("kursiokai.txt");
     if (!inFile) {
         std::cerr << "Nepavyko atidaryti failo" << std::endl;
         return 1;
     }
+
+    auto endReadFileTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> readFileTime = endReadFileTime - startReadFileTime;
 
     std::string eilute;
     while (std::getline(inFile, eilute)) {
@@ -65,12 +70,14 @@ int main() {
 
     inFile.close();
 
+    int studentCount = studentai.size(); 
+    std::cout << "Studentų skaičius: " << studentCount << std::endl;
+
+    std::cout << "Failo kursiokai.txt nuskaitymas uztruko: " << readFileTime.count() << " sekundes" << std::endl;
+
     std::ofstream rezultataiFile("rezultatai.txt");
     std::ofstream vargsiukaiFile("vargsiukai.txt");
     std::ofstream galvociaiFile("galvociai.txt");
-
-    int studentCount = studentai.size(); 
-    std::cout << "Studentų skaičius: " << studentCount << std::endl;
 
     rezultataiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)"  << std::endl;
     rezultataiFile << "---------------------------------------------------------------------" << std::endl;
