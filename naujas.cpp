@@ -118,6 +118,23 @@ int main() {
     std::chrono::duration<double> sortTime = endSortTime - startSortTime;
     std::cout << "Failo rusiavimas su " << studentCount << " studentais į dvi grupes uztruko: " << sortTime.count() << " sekundes" << std::endl;
 
+    std::ifstream readVargsiukaiFile("vargsiukai.txt");
+    std::ifstream readGalvociaiFile("galvociai.txt");
+
+    auto startWriteVargsiukaiTime = std::chrono::high_resolution_clock::now();
+    for (const Studentas& studentas : studentai) {
+        double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas, true);}
+    auto endWriteVargsiukaiTime = std::chrono::high_resolution_clock::now(); 
+    std::chrono::duration<double> writeVargsiukaiTime = endWriteVargsiukaiTime - startWriteVargsiukaiTime;
+    std::cout << "Failo isvedimas su" << studentCount << "studentais į vargsiukus uztruko: " << writeVargsiukaiTime.count() << " sekundes" << std::endl;
+
+    auto startWriteGalvociaiTime = std::chrono::high_resolution_clock::now();
+    for (const Studentas& studentas : studentai) {
+        double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas, true);}
+    auto endWriteGalvociaiTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> writeGalvociaiTime = endWriteGalvociaiTime - startWriteGalvociaiTime;
+    std::cout << "Failo isvedimas su" << studentCount << "studentais į galvociai uztruko: " << writeGalvociaiTime.count() << " sekundes" << std::endl;
+    
 
     rezultataiFile.close();
     vargsiukaiFile.close();
