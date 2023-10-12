@@ -69,6 +69,9 @@ int main() {
     std::ofstream vargsiukaiFile("vargsiukai.txt");
     std::ofstream galvociaiFile("galvociai.txt");
 
+    int studentCount = studentai.size(); 
+    std::cout << "Studentų skaičius: " << studentCount << std::endl;
+
     rezultataiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)"  << std::endl;
     rezultataiFile << "---------------------------------------------------------------------" << std::endl;
 
