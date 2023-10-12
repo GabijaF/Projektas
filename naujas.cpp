@@ -65,14 +65,38 @@ int main() {
 
     inFile.close();
 
-    std::ofstream outFile("rezultatai.txt");
+    std::ofstream rezultataiFile("rezultatai.txt");
+    std::ofstream vargsiukaiFile("vargsiukai.txt");
+    std::ofstream galvociaiFile("galvociai.txt");
 
-    outFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)" << std::endl;
-    outFile << "---------------------------------------------------------------------" << std::endl;
+    rezultataiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)"  << std::endl;
+    rezultataiFile << "---------------------------------------------------------------------" << std::endl;
 
-    for (const Studentas& studentas : studentai) {
+    vargsiukaiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)" << std::endl;
+    vargsiukaiFile << "---------------------------------------------------------------------" << std::endl;
+
+    galvociaiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)" << std::endl;
+    galvociaiFile << "---------------------------------------------------------------------" << std::endl;
+
+
+   for (const Studentas& studentas : studentai) {
         double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas, true);
 
-        outFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(5) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis << std::endl;
-    }}
+        rezultataiFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(5) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis  << std::endl;
+
+        if (galutinisBalasVidurkis < 5.0) {
+            vargsiukaiFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(5) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis << std::endl;
+        } else {
+            galvociaiFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(5) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis << std::endl;
+        }
+    }
+
+    rezultataiFile.close();
+    vargsiukaiFile.close();
+    galvociaiFile.close();
+
+    return 0;
+
+    
+}
 
