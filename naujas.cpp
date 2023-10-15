@@ -1,10 +1,10 @@
 #include <iostream>
 #include <fstream>
-#include <string>
-#include <sstream>
 #include <vector>
 #include <iomanip>
+#include <sstream>
 #include <algorithm>
+#include <random>
 #include <chrono>
 
 struct Studentas {
@@ -25,124 +25,121 @@ double skaiciuotiVidurki(const std::vector<int>& pazymiai) {
     return suma / pazymiai.size();
 }
 
-
-double skaiciuotiGalutiniBala(const Studentas& studentas, bool naudotiVidurki) {
+double skaiciuotiGalutiniBala(const Studentas& studentas) {
     double NdBalas = skaiciuotiVidurki(studentas.Nd);
     double galutinisBalas = (0.4 * NdBalas + 0.6 * studentas.egz);
     return galutinisBalas;
 }
 
+
+std::string generateName(int index) {
+    return "Vardas" + std::to_string(index);
+}
+
+
+std::string generateSurname(int index) {
+    return "Pavarde" + std::to_string(index);
+}
+
 int main() {
     std::vector<Studentas> studentai;
-    char baloSkaiciavimoBudas;
 
-    auto startReadFileTime = std::chrono::high_resolution_clock::now(); 
+    int numberOfStudents;
+    std::cout << "iveskite studentu skaiciu: ";
+    std::cin >> numberOfStudents;
 
-    std::ifstream inFile("kursiokai.txt");
-    if (!inFile) {
-        std::cerr << "Nepavyko atidaryti failo" << std::endl;
-        return 1;
-    }
+    auto startCreation = std::chrono::high_resolution_clock::now();
 
-    auto endReadFileTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> readFileTime = endReadFileTime - startReadFileTime;
-
-    std::string eilute;
-    while (std::getline(inFile, eilute)) {
-        std::istringstream iss(eilute);
+    
+    for (int i = 1; i <= numberOfStudents; ++i) {
         Studentas naujasStudentas;
-        iss >> naujasStudentas.vardas >> naujasStudentas.pavarde;
+        naujasStudentas.vardas = generateName(i);
+        naujasStudentas.pavarde = generateSurname(i);
+        naujasStudentas.egz = rand() % 10 + 1; 
 
-        int pazymys;
-        while (iss >> pazymys) {
-            naujasStudentas.Nd.push_back(pazymys);
+        for (int j = 0; j < 5; ++j) {
+            naujasStudentas.Nd.push_back(rand() % 10 + 1); 
         }
-
-        if (naujasStudentas.Nd.empty()) {
-            
-            continue;
-        }
-
-        naujasStudentas.egz = naujasStudentas.Nd.back();
-        naujasStudentas.Nd.pop_back();
 
         studentai.push_back(naujasStudentas);
     }
 
-    inFile.close();
-
-    int studentCount = studentai.size(); 
-    std::cout << "Studentų skaičius: " << studentCount << std::endl;
-
-    std::cout << "Failo kursiokai.txt nuskaitymas uztruko: " << readFileTime.count() << " sekundes" << std::endl;
-
-    auto startCreateResultFileTime = std::chrono::high_resolution_clock::now();
-
-    std::ofstream rezultataiFile("rezultatai.txt");
-    std::ofstream vargsiukaiFile("vargsiukai.txt");
-    std::ofstream galvociaiFile("galvociai.txt");
-
-    auto endCreateResultFileTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> createResultFileTime = endCreateResultFileTime - startCreateResultFileTime;
-    std::cout << "Failo rezultatai.txt kurimas uztruko: " << createResultFileTime.count() << " sekundes" << std::endl;
-
-    auto startReadResultFileTime = std::chrono::high_resolution_clock::now();
-    std::ifstream readRezultataiFile("rezultatai.txt");
-    auto endReadResultFileTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> readResultFileTime = endReadResultFileTime - startReadResultFileTime;
-    std::cout << "Failo rezultatai.txt nuskaitymas uztruko: " << readResultFileTime.count() << " sekundes" << std::endl;
-
-    rezultataiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)"  << std::endl;
-    rezultataiFile << "---------------------------------------------------------------------" << std::endl;
-
-    vargsiukaiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)" << std::endl;
-    vargsiukaiFile << "---------------------------------------------------------------------" << std::endl;
-
-    galvociaiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavardė" << std::setw(15) << std::right << "Galutinis (Vid.)" << std::endl;
-    galvociaiFile << "---------------------------------------------------------------------" << std::endl;
+    auto endCreation = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diffCreation = endCreation - startCreation;
+    std::cout << "Failo su " << numberOfStudents << " studentu/-ais kurimas uztruko: " << diffCreation.count() << " s\n";
     
-    auto startSortTime = std::chrono::high_resolution_clock::now();
+    
+    
+    auto startRead = std::chrono::high_resolution_clock::now();
+    auto endRead = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diffRead = endRead - startRead;
+    std::cout << "Failo su " << numberOfStudents << " studentu/-ais nuskaitymas uztruko: " << diffRead.count() << " s\n";
+
+    
+    std::vector<Studentas> vargsiukai;
+    std::vector<Studentas> galvociai;
+
+    auto startSort = std::chrono::high_resolution_clock::now();
 
     for (const Studentas& studentas : studentai) {
-        double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas, true);
-
-        rezultataiFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(5) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis  << std::endl;
-
+        double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas);
         if (galutinisBalasVidurkis < 5.0) {
-            vargsiukaiFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(5) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis << std::endl;
+            vargsiukai.push_back(studentas);
         } else {
-            galvociaiFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(5) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis << std::endl;
+            galvociai.push_back(studentas);
         }
     }
 
-    auto endSortTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> sortTime = endSortTime - startSortTime;
-    std::cout << "Failo rusiavimas su " << studentCount << " studentais į dvi grupes uztruko: " << sortTime.count() << " sekundes" << std::endl;
+    auto endSort = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diffSort = endSort - startSort;
+    std::cout << "Failo rusiavimas su " << numberOfStudents << " studentais i dvi grupes uztruko: " << diffSort.count() << " s\n";
 
-    std::ifstream readVargsiukaiFile("vargsiukai.txt");
-    std::ifstream readGalvociaiFile("galvociai.txt");
-
-    auto startWriteVargsiukaiTime = std::chrono::high_resolution_clock::now();
-    for (const Studentas& studentas : studentai) {
-        double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas, true);}
-    auto endWriteVargsiukaiTime = std::chrono::high_resolution_clock::now(); 
-    std::chrono::duration<double> writeVargsiukaiTime = endWriteVargsiukaiTime - startWriteVargsiukaiTime;
-    std::cout << "Failo isvedimas su" << studentCount << "studentais į vargsiukus uztruko: " << writeVargsiukaiTime.count() << " sekundes" << std::endl;
-
-    auto startWriteGalvociaiTime = std::chrono::high_resolution_clock::now();
-    for (const Studentas& studentas : studentai) {
-        double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas, true);}
-    auto endWriteGalvociaiTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> writeGalvociaiTime = endWriteGalvociaiTime - startWriteGalvociaiTime;
-    std::cout << "Failo isvedimas su" << studentCount << "studentais į galvociai uztruko: " << writeGalvociaiTime.count() << " sekundes" << std::endl;
     
+    std::ofstream rezultataiFile("rezultatai.txt");
+    rezultataiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavarde" << std::setw(10) << std::right << "Galutinis balas (vid.)" << std::endl;
+    rezultataiFile << "---------------------------------------------------------------------" << std::endl;
 
+    for (const Studentas& studentas : studentai) {
+        double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas);
+        rezultataiFile << std::setw(15) << std::left << studentas.vardas << std::setw(15) << std::left << studentas.pavarde << std::setw(5) << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis << std::endl;
+    }
     rezultataiFile.close();
+
+    
+    std::ofstream vargsiukaiFile("vargsiukai.txt");
+    vargsiukaiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavarde" << std::setw(15) << std::right << "Galutinis balas (vid.)" << std::endl;
+    vargsiukaiFile << "---------------------------------------------------------------------" << std::endl;
+
+    auto startOutputVargsiukai = std::chrono::high_resolution_clock::now();
+
+    for (const Studentas& studentas : vargsiukai) {
+        double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas);
+        vargsiukaiFile << std::setw(15) << std::left << studentas.vardas << " " << std::setw(15) << std::left << studentas.pavarde << " " << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis << std::endl;
+    }
+
     vargsiukaiFile.close();
+
+    auto endOutputVargsiukai = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diffOutputVargsiukai = endOutputVargsiukai - startOutputVargsiukai;
+    std::cout << "Failo isvedimas su " << numberOfStudents << " studentais i vargsiukus uztruko: " << diffOutputVargsiukai.count() << " s\n";
+
+    
+    std::ofstream galvociaiFile("galvociai.txt");
+    galvociaiFile << std::setw(15) << std::left << "Vardas" << std::setw(15) << std::left << "Pavarde" << std::setw(15) << std::right << "Galutinis balas (vid.)" << std::endl;
+    galvociaiFile << "---------------------------------------------------------------------" << std::endl;
+
+    auto startOutputGalvociai = std::chrono::high_resolution_clock::now();
+
+    for (const Studentas& studentas : galvociai) {
+        double galutinisBalasVidurkis = skaiciuotiGalutiniBala(studentas);
+        galvociaiFile << std::setw(15) << std::left << studentas.vardas << " " << std::setw(15) << std::left << studentas.pavarde << " " << std::fixed << std::setprecision(2) << std::right << galutinisBalasVidurkis << std::endl;
+    }
+
     galvociaiFile.close();
 
+    auto endOutputGalvociai = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diffOutputGalvociai = endOutputGalvociai - startOutputGalvociai;
+    std::cout << "Failo isvedimas su " << numberOfStudents << " studentais i galvocius uztruko: " << diffOutputGalvociai.count() << " s\n";
+
     return 0;
-
-    
 }
-
